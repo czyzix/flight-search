@@ -1,36 +1,42 @@
-import "./Home.css"
+import "./Home.css";
 import { useState, useEffect } from "react";
 import FlightList from "../FlightList/FlightList";
-import { TOKEN_API_URL, TODAY } from "../../constants"
-import OriginInput from "../OriginInput/OriginInput";
-import DestinationInput from "../DestinationInput/DestinationInput";
+import AirportInput from "../AirportInput/AirportInput";
+import Loader from "../Loader/Loader";
+import { TOKEN_API_URL, TODAY } from "../../constants";
+
 
 
 const Home = () => {
 
-    const [origin, setOrigin] = useState("");
-    const [originSuggestion, setOriginSuggestion] = useState('');
-    const [isOriginErrorMessage, setOriginErrorMessage] = useState(false);
-    const [destination, setDestination] = useState("");
-    const [destinationSuggestion, setDestinationSuggestion] = useState('');
-    const [isDestinationErrorMessage, setDestinationErrorMessage] = useState(false);
-    const [departureDate, setDepartureDate] = useState("");
-    const [returnDate, setReturnDate] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [accessToken, setAccessToken] = useState('');
-    const [flights, setFlights] = useState(null);
+    const [formState, setFormState] = useState({
+        origin: "",
+        originSuggestion: "",
+        isOriginErrorMessage: false,
+        destination: "",
+        destinationSuggestion: "",
+        isDestinationErrorMessage: false,
+        departureDate: "",
+        returnDate: ""
+    });
+
+    const [fetchingState, setFetchingState] = useState({
+        isLoading: false,
+        accessToken: "",
+        flights: null
+    });
 
     useEffect(() => {
-        if (origin) {
-            fetchAirports(origin, setOriginSuggestion, setOriginErrorMessage);
+        if (formState.origin) {
+            fetchAirports(formState.origin, setFormState, 'originSuggestion', 'isOriginErrorMessage');
         }
-    }, [origin]);
+    }, [formState.origin]);
 
     useEffect(() => {
-        if (destination) {
-            fetchAirports(destination, setDestinationSuggestion, setDestinationErrorMessage);
+        if (formState.destination) {
+            fetchAirports(formState.destination, setFormState, 'destinationSuggestion', 'isDestinationErrorMessage');
         }
-    }, [destination]);
+    }, [formState.destination]);
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -40,84 +46,90 @@ const Home = () => {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: "grant_type=client_credentials&client_id=w79cfJjFiHlntapG7swLoPgl1nffyGvC&client_secret=dA9FFdNGKFgagrln",
+                body: `grant_type=client_credentials&client_id=${process.env.REACT_APP_AMADEUS_CLIENT_ID}&client_secret=${process.env.REACT_APP_AMADEUS_CLIENT_SECRET}`,
             }
 
             const response = await fetch(TOKEN_API_URL, payload);
             const data = await response.json();
-            setAccessToken(data.access_token);
+            setFetchingState({ ...fetchingState, accessToken: data.access_token })
         };
         fetchToken();
     }, []);
 
     const handleOriginChange = (e) => {
-        setOrigin(e.target.value.toUpperCase());
-        setOriginSuggestion([]);
-        setOriginErrorMessage(false);
+        const newOrigin = e.target.value.toUpperCase();
+        setFormState(prevState => ({
+            ...prevState,
+            origin: newOrigin,
+            originSuggestion: [],
+            isOriginErrorMessage: false
+        }));
     };
     const handleOriginClick = () => {
-        setOrigin(originSuggestion.iataCode)
-        setOriginSuggestion([]);
+        setFormState(prevState => ({
+            ...prevState,
+            origin: prevState.originSuggestion.iataCode,
+            originSuggestion: []
+        }));
     };
     const handleDestinationChange = (e) => {
-        setDestination(e.target.value.toUpperCase());
-        setDestinationSuggestion([]);
-        setDestinationErrorMessage(false);
+        const newDestination = e.target.value.toUpperCase();
+        setFormState(prevState => ({
+            ...prevState,
+            destination: newDestination,
+            destinationSuggestion: [],
+            isDestinationErrorMessage: false
+        }));
     };
     const handleDestinationClick = () => {
-        setDestination(destinationSuggestion.iataCode)
-        setDestinationSuggestion([]);
+        setFormState(prevState => ({
+            ...prevState,
+            destination: prevState.destinationSuggestion.iataCode,
+            destinationSuggestion: []
+        }));
     };
     const handleDepartureDateChange = (e) => {
         const { value } = e.target;
-        setDepartureDate(value);
+        setFormState(prevState => ({
+            ...prevState,
+            departureDate: value
+        }));
     };
     const handleReturnDateChange = (e) => {
         const { value } = e.target;
-        setReturnDate(value);
-    };
-    const apiFlightsUrl = `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${departureDate}&returnDate=${returnDate}&adults=1&nonStop=false&max=10`;
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setFlights(null)
-
-        fetch(apiFlightsUrl, {
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
-        })
-            .then(res => res.json())
-            .then(data => setFlights(data))
-            .catch(error => console.error(error))
-            .finally(() => setIsLoading(false))
+        setFormState(prevState => ({
+            ...prevState,
+            returnDate: value
+        }));
     };
 
-    const fetchAirports = async (inputValue, setSuggestion, setErrorMessage) => {
-
+    const fetchAirports = async (inputValue, setState, suggestionKey, errorKey) => {
         if (inputValue.length >= 3) {
             try {
                 const apiAirportsCodes = `https://aviation-reference-data.p.rapidapi.com/airports/${inputValue}`
-
                 const response = await fetch(
                     apiAirportsCodes,
                     {
                         headers: {
-                            // TO DO: wrzucic klucze do env files
                             "x-rapidapi-host": "aviation-reference-data.p.rapidapi.com",
-                            "x-rapidapi-key": "b2008d7d15mshce0078fda594bb6p16af45jsna78e90852f3f",
+                            "x-rapidapi-key": `${process.env.REACT_APP_RAPID_API_KEY}`,
                         },
                     }
                 );
 
                 if (response.status === 404) {
-                    setSuggestion([]);
-                    setErrorMessage(true);
+                    setState(prevState => ({
+                        ...prevState,
+                        [suggestionKey]: [],
+                        [errorKey]: true
+                    }));
                 } else {
                     const data = await response.json();
-                    setSuggestion(data);
-                    setErrorMessage(false);
+                    setState(prevState => ({
+                        ...prevState,
+                        [suggestionKey]: data,
+                        [errorKey]: false
+                    }));
                 }
             } catch (error) {
                 console.error(error);
@@ -125,37 +137,69 @@ const Home = () => {
         }
     };
 
+    const apiFlightsUrl = `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${formState.origin}&destinationLocationCode=${formState.destination}&departureDate=${formState.departureDate}&returnDate=${formState.returnDate}&adults=1&nonStop=false&max=10`;
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        setFetchingState(prevState => ({
+            ...prevState,
+            isLoading: true,
+            flights: null
+        }));
+
+        fetch(apiFlightsUrl, {
+            headers: {
+                "Authorization": `Bearer ${fetchingState.accessToken}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => setFetchingState(prevState => ({
+                ...prevState,
+                flights: data
+            })))
+            .catch(error => console.error(error))
+            .finally(() => {
+                setFetchingState(prevState => ({
+                    ...prevState,
+                    isLoading: false
+                }));
+            });
+    };
+
     return (
-        <>
             <div className="home-wrapper">
                 <div className="form-wrapper">
                     <form onSubmit={handleSearch}>
                         <div>
                             <div className="inputs-wraper">
                                 <div className="text-inputs">
-                                    <OriginInput
-                                        origin={origin}
-                                        originSuggestion={originSuggestion}
-                                        isOriginErrorMessage={isOriginErrorMessage}
-                                        handleOriginChange={handleOriginChange}
-                                        handleOriginClick={handleOriginClick}
+                                    <AirportInput
+                                        value={formState.origin}
+                                        suggestion={formState.originSuggestion}
+                                        isError={formState.isOriginErrorMessage}
+                                        onChange={handleOriginChange}
+                                        onClick={handleOriginClick}
+                                        className={"origin"}
+                                        label={"From"}
                                     />
-                                    <DestinationInput
-                                        destination={destination}
-                                        destinationSuggestion={destinationSuggestion}
-                                        isDestinationErrorMessage={isDestinationErrorMessage}
-                                        handleDestinationChange={handleDestinationChange}
-                                        handleDestinationClick={handleDestinationClick}
+                                    <AirportInput
+                                        value={formState.destination}
+                                        suggestion={formState.destinationSuggestion}
+                                        isError={formState.isDestinationErrorMessage}
+                                        onChange={handleDestinationChange}
+                                        onClick={handleDestinationClick}
+                                        className={"destination"}
+                                        label={"To"}
                                     />
                                 </div>
                                 <div className="date-inputs">
                                     <div className="element depart">
                                         <label>Depart</label>
-                                        <input type="date" className="left-input" min={TODAY} value={departureDate} onChange={handleDepartureDateChange} required />
+                                        <input type="date" className="left-input" min={TODAY} value={formState.departureDate} onChange={handleDepartureDateChange} required />
                                     </div>
                                     <div className="element return">
                                         <label>Return</label>
-                                        <input type="date" className="right-input" min={TODAY} value={returnDate} onChange={handleReturnDateChange} required />
+                                        <input type="date" className="right-input" min={TODAY} value={formState.returnDate} onChange={handleReturnDateChange} required />
                                     </div>
                                 </div>
                             </div>
@@ -163,18 +207,12 @@ const Home = () => {
                                 <b>Search IATA code <a href="https://www.iata.org/en/publications/directories/code-search/" target="_blank">here</a></b>
                             </div>
                         </div>
-                        <button className="search-btn" disabled={isOriginErrorMessage || isDestinationErrorMessage}>SEARCH</button>
+                        <button className="search-btn" disabled={formState.isOriginErrorMessage || formState.isDestinationErrorMessage}>SEARCH</button>
                     </form>
                 </div>
-                <div className="loader-wrapper">
-                    {isLoading && <div className="loader"><div></div><div></div></div>}
-                </div>
-                <div className="flights-wrapper">
-                    {flights && <FlightList flights={flights.data} />}
-                </div>
-
+                <Loader isLoading={fetchingState.isLoading} />
+                {fetchingState.flights && <FlightList flights={fetchingState.flights.data} />}
             </div>
-        </>
     );
 }
 

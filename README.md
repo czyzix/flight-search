@@ -1,4 +1,30 @@
-# Getting Started with Create React App
+# Flight Search
+
+A simple flight search engine that allows the user to find the 10 cheapest flights from the departure airport to the arrival airport on the given date.
+
+## Features
+
+- Allow the user to input their departure and arrival airports, and date of travel
+- Display the 10 cheapest flights that matches the user's criteria
+- Preventing searching flights when IATA codes are incorrect
+- Error handling where no flights are available for the given criteria and when provided criteria are incorrect
+- Responsive design and user-friendly interface
+
+## Technologies Used
+
+- React
+- Create React App
+
+## Design assumptions and known limitation.
+
+I've wanted to create an search engine that can be used around the world and uses only free API. 
+Beacuse of that I've used Amadeus Flight Offers Search test enviroment API along with Aviation Reference Data API for autosuggest and validate IATA airports codes.
+
+To provide better UX I would use Amadeus Aiport & City Search production enviroment API. Test enviroment is limited only to data from United States, Spain, United Kingdom, Germany and India, and beacuse of that I've decided to use Aviation Reference Data API which can validate IATA codes around the world and it's free.
+
+---
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
