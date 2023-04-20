@@ -3,9 +3,7 @@ import { useState, useEffect } from "react";
 import FlightList from "../FlightList/FlightList";
 import AirportInput from "../AirportInput/AirportInput";
 import Loader from "../Loader/Loader";
-import { TOKEN_API_URL, TODAY } from "../../constants";
-
-
+import { TOKEN_API_URL } from "../../constants";
 
 const Home = () => {
 
@@ -103,6 +101,9 @@ const Home = () => {
         }));
     };
 
+    const getToday = () => new Date().toISOString().split("T")[0];
+    const today = getToday();
+
     const fetchAirports = async (inputValue, setState, suggestionKey, errorKey) => {
         if (inputValue.length >= 3) {
             try {
@@ -195,11 +196,11 @@ const Home = () => {
                                 <div className="date-inputs">
                                     <div className="element depart">
                                         <label>Depart</label>
-                                        <input type="date" className="left-input" min={TODAY} value={formState.departureDate} onChange={handleDepartureDateChange} required />
+                                        <input type="date" className="left-input" min={today} value={formState.departureDate} onChange={handleDepartureDateChange} required />
                                     </div>
                                     <div className="element return">
                                         <label>Return</label>
-                                        <input type="date" className="right-input" min={TODAY} value={formState.returnDate} onChange={handleReturnDateChange} required />
+                                        <input type="date" className="right-input" min={today} value={formState.returnDate} onChange={handleReturnDateChange} required />
                                     </div>
                                 </div>
                             </div>
