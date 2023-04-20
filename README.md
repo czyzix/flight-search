@@ -2,6 +2,8 @@
 
 A simple flight search engine that allows the user to find the 10 cheapest flights from the departure airport to the arrival airport on the given date.
 
+Demo: https://czyzix.github.io/flight-search
+
 ## Features
 
 - Allow the user to input their departure and arrival airports, and date of travel
