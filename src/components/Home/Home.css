@@ -1,0 +1,283 @@
+.home-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    background-color: rgb(37, 37, 90);
+}
+
+.iata-link-wrapper {
+    font-size: 13px;
+    color: white;
+}
+
+.iata-link-wrapper a {
+    text-decoration: none;
+    color: rgb(0, 195, 255);
+}
+
+form {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.inputs-wraper {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
+}
+
+.text-inputs,
+.date-inputs {
+    display: flex;
+    flex-direction: row;
+}
+
+.element {
+    display: flex;
+    flex-direction: column;
+}
+
+.element label,
+.checkbox label,
+.select label {
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    color: white;
+}
+
+.select {
+    position: relative;
+    font-size: 14px;
+    bottom: 1px;
+}
+
+.select select {
+    transform: scale(1.1);
+    margin-right: 1.5rem;
+    margin-left: 0.2rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.select select:focus {
+    outline: solid 2px rgb(255, 145, 0);
+}
+
+.select span {
+    position: relative;
+    font-size: 11px;
+    bottom: 5px;
+    margin: 0 5px;
+    color: rgb(0, 195, 255);
+}
+
+.cabin label {
+    margin-right: 1rem;
+}
+
+.checkbox label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-right: 1.5rem;
+}
+
+.checkbox input {
+    transform: scale(1.2);
+    margin-right: 0.3rem
+}
+
+.element input {
+    height: 3rem;
+    font-size: 17px;
+    padding-left: 1rem;
+    border: solid 3px rgb(0, 195, 255);
+}
+
+input:focus {
+    outline: solid 2px rgb(255, 145, 0);
+}
+
+.left-input {
+    border-radius: 20px 0 0 20px;
+}
+
+.right-input {
+    border-radius: 0 20px 20px 0;
+}
+
+.destination {
+    margin: 0 1rem 0 0.5rem;
+}
+
+.origin,
+.destination {
+    position: relative;
+}
+
+.error-message {
+    position: absolute;
+    background-color: rgb(255, 222, 222);
+    color: rgb(223, 73, 73);
+    right: 2.8px;
+    top: 4.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    z-index: 10;
+}
+
+.error {
+    background-color: rgb(255, 222, 222);
+    color: rgb(223, 73, 73);
+}
+
+.suggestion {
+    position: absolute;
+    background-color: rgb(250, 250, 250);
+    left: 2.9px;
+    top: 4.2rem;
+    padding: 0.5rem 1rem;
+    width: 90%;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.suggestion:hover {
+    background-color: rgb(218, 235, 255);
+}
+
+.depart {
+    margin-right: 0.5rem;
+}
+
+.search-btn {
+    min-width: 80px;
+    min-height: 80px;
+    margin: 1rem 0 1rem 2rem;
+    border-radius: 40px;
+    border: none;
+    background-color: rgb(0, 195, 255);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    background-color: rgb(0, 102, 255);
+}
+
+.search-btn:disabled {
+    background-color: rgb(189, 189, 189);
+}
+
+.loader {
+    display: inline-block;
+    position: relative;
+    width: 70px;
+    height: 70px;
+    margin-top: 1rem;
+}
+
+.loader div {
+    position: absolute;
+    border: 4px solid rgb(0, 195, 255);
+    opacity: 1;
+    border-radius: 50%;
+    animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+.loader div:nth-child(2) {
+    animation-delay: -0.5s;
+}
+
+@keyframes lds-ripple {
+    0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+
+    4.9% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+
+    5% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+
+    100% {
+        top: 0px;
+        left: 0px;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .inputs-wraper {
+        flex-direction: column;
+    }
+
+    .date-inputs {
+        margin-top: 0.5rem;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+
+    .text-inputs,
+    .date-inputs {
+        flex-direction: column;
+        min-width: 260px;
+    }
+
+    .select {
+        margin-top: 0.4rem;
+    }
+
+    .select select,
+    .destination,
+    .depart,
+    .checkbox label {
+        margin: 0;
+    }
+
+    .left-input,
+    .right-input {
+        border-radius: 20px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    form {
+        flex-direction: column;
+    }
+
+    .search-btn {
+        margin: 1rem 0 0 0;
+    }
+}
