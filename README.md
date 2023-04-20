@@ -14,6 +14,7 @@ A simple flight search engine that allows the user to find the 10 cheapest fligh
 
 - React
 - Create React App
+- CSS
 
 ## Design assumptions and known limitation.
 
